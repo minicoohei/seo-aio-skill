@@ -1,0 +1,6 @@
+*.pyc
+__pycache__/
+.DS_Store
+research.json
+history.json
+analysis.md
