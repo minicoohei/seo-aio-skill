@@ -62,6 +62,23 @@ python3 scripts/watch.py history.json            # 下落時のみ exit 1 + ALER
 python3 scripts/watch.py history.json --drop 1.0 # 下落しきい値(ポイント)を変更
 ```
 
+## GSC / Google Ads と紐づける
+
+取得側の **検索ボリューム・SERP順位** に、あなたの実データ（GSC の表示/クリック/CTR/順位、
+Google Ads の費用/CV）を**キーワードで結合**して、改善余地を機械的に出せます。
+
+```bash
+# Search Console「クエリ」CSV と結合 → 改善候補を Markdown 化
+python3 scripts/merge_gsc.py research.json gsc-queries.csv -o gsc_merge.md
+```
+- **§1**: 順位は◯位以内なのに CTR が中央値未満 → title/description 改善候補
+- **§2**: 検索需要はあるのに GSC 未出現 → 新規/強化すべきページ候補
+
+GSC データは Search Console の CSV エクスポート、または GSC 用 MCP の出力どちらでも。
+Google Ads は `analyze.py` の §2（ボリューム×CPC×自社未ランク）が出稿候補のショートリスト。
+実績（クリック/費用/CV）CSV があれば同じ join パターンで「広告依存→SEOに寄せる語」を抽出できます。
+詳しい手順は [`SKILL.md`](SKILL.md) の「5. GSC / Google Ads と紐づける」を参照。
+
 ## research.json について
 
 `research.json` は seo-aio エンジン出力をフィールド名そのままで透過格納した単一ファイル。

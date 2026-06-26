@@ -62,6 +62,37 @@ python3 scripts/watch.py history.json        # 下落時のみ exit code 1 + ア
 - 横ばい/改善なら `OK` を出力して exit 0（＝通知不要）。
 - しきい値は `--drop`（既定 0.5 ポイント）で調整可能。
 
+## 5. GSC（Search Console）/ Google Ads と紐づける
+取得側（seo-aio MCP）の **検索ボリューム・SERP順位** に、あなたの実データ
+（GSC の表示/クリック/CTR/順位、Google Ads の費用/CV）を**キーワードで結合**して使う。
+
+### 5-1. GSC と突き合わせ（決定的）
+GSC データを用意（どちらでも）:
+- **A. CSV**: Search Console → 検索パフォーマンス → 「クエリ」をエクスポート
+- **B. MCP**: あなたのエージェントに接続した GSC 用 MCP の出力を CSV/JSON で保存
+
+結合:
+```bash
+python3 scripts/merge_gsc.py research.json gsc-queries.csv -o gsc_merge.md
+```
+出力 `gsc_merge.md`:
+- **§1 順位は◯位以内なのに CTR が中央値未満** → title/description 改善候補
+- **§2 検索需要はあるのに GSC 未出現** → 新規/強化すべきページ候補
+
+> エージェントへの依頼例: 「gsc_merge.md の §1 は title/meta のリライト案、§2 は新規ページ案を、
+> 検索意図ごとに優先度つきで出して」
+
+### 5-2. Google Ads と紐づけ
+- **出稿候補の選定**: `analyze.py` の §2（検索ボリューム×CPC×自社未ランク）がそのまま
+  Keyword Planner 的なショートリスト。「CPC が安く検索数があり競合が上位＝広告と自然検索の両取り」を狙う。
+- **実績との突き合わせ**: Ads の実績（キーワード別 クリック/費用/CV）を CSV にして同じ join で
+  「費用はかかっているが research 上は競合も弱い＝自然検索に寄せられる語」「CV しているのに
+  自然検索で未ランク＝SEO 強化の優先語」を抽出（`merge_gsc.py` を雛形に列を差し替え、
+  もしくはエージェントに `research.json` と Ads CSV を渡して突き合わせを依頼）。
+
+> いずれも **GSC / Ads 側の接続はあなたの環境の MCP / エクスポート**。本サービスは検索データ側を担当し、
+> 突き合わせ（紐づけ）は本スキル＋エージェントで行う、という二層構成のまま。
+
 ## 注意
 - 本スキルは**取得側（DataForSEO/LLM 実査）には触れない**。原価のかかる取得は MCP 側で課金される。
 - `research.json` のフィールド名はエンジン出力をそのまま使う。スクリプトは欠損に強く、無いセクションはスキップする。
